@@ -1,0 +1,22 @@
+# 常に上書き
+overwrite: true
+# スキーマファイルを指定
+# 今回のケースではAppSyncから出力
+schema: "schema.graphql"
+generates:
+  # 型生成する型のパス
+  src/generated/graphql.ts:
+    plugins:
+      - "typescript"
+      # Mutation,Queryの型を生成
+      - "typescript-operations"
+    config:
+      # __typenameフィールドの出力を抑制
+      # 例: `__typename?: 'Task';`
+      skipTypename: true
+      # Mutation,Queryのオプショナルを外す
+      avoidOptionals: true
+    hooks:
+      # 型生成後に実行するコマンド
+      afterOneFileWrite:
+        - prettier --write src/generated/graphql.ts

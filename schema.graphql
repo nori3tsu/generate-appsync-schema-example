@@ -1,0 +1,47 @@
+type Mutation {
+	# In this example, only users in the ManagerGroup can create tasks
+	createTask(
+		owner: String!,
+		title: String!,
+		taskStatus: String!,
+		description: String!
+	): Task!
+		@aws_auth(cognito_groups: ["ManagerGroup"])
+	# Both Employees and Managers can update a task's status
+	updateTaskStatus(id: ID!, taskStatus: String!): Task!
+		@aws_auth(cognito_groups: ["EmployeeGroup","ManagerGroup"])
+	updateTaskBody(id: ID!, title: String!, description: String!): Task!
+		@aws_auth(cognito_groups: ["ManagerGroup"])
+}
+
+type Query {
+	# Users belonging to both EmployeesGroup and ManagerGroup can read a particular task
+	getTask(id: ID!): Task!
+		@aws_auth(cognito_groups: ["EmployeeGroup","ManagerGroup"])
+	# Only Managers can list all the Tasks
+	allTasks(nextToken: String): TaskConnection!
+		@aws_auth(cognito_groups: ["ManagerGroup"])
+}
+
+type Task {
+	id: ID!
+	owner: String!
+	title: String!
+	description: String!
+	taskStatus: String
+}
+
+type TaskConnection {
+	items: [Task]
+	nextToken: String
+}
+
+schema {
+	query: Query
+	mutation: Mutation
+}
+
+enum TaskType {
+  Task,
+  Story
+}

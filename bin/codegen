@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# ワークディレクトリをプロジェクトルートに変更
+cd $(dirname $0)/..
+
+# AppSyncからGraphQLスキーマをダウンロード
+APPSYNC_APP_ID="<ここにAppSync IDを設定>"
+aws appsync get-introspection-schema --api-id ${APPSYNC_APP_ID} --format SDL schema.graphql
+
+# 型生成
+graphql-codegen --config codegen.yml
